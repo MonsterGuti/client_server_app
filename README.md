@@ -53,5 +53,3 @@
   - `get_user_by_email(email)` – retrieves user information by email  
   - `update_user(email, first_name, last_name, password_hash)` – updates user information  
 
-## Project Files
-
