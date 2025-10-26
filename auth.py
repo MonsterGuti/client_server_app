@@ -1,5 +1,7 @@
 import re
 import hashlib
+import string
+import random
 
 EMAIL_RE = re.compile(r"^[A-Za-z0-9._]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$")
 
@@ -21,7 +23,11 @@ def is_valid_password(password: str) -> bool:
         return False
     if len(password) < 8:
         return False
-    if not re.search(r"[A-Za-z]", password) or not re.search(r"\d", password):
+    if not re.search(r"[A-Z]", password):
+        return False
+    if not re.search(r"[a-z]", password):
+        return False
+    if not re.search(r"\d", password):
         return False
     return True
 
@@ -30,3 +36,8 @@ def hash_password(password: str) -> str:
 
 def verify_password(password: str, hashed_password: str) -> bool:
     return hashed_password == hashlib.sha256(password.encode()).hexdigest()
+
+def create_captcha(length = 6) -> str:
+    all_symbols = string.ascii_uppercase + string.digits
+    return ''.join(random.choices(all_symbols, k = length))
+

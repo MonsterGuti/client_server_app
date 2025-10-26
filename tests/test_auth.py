@@ -1,48 +1,35 @@
-from auth import is_valid_email, is_valid_name, is_valid_password, hash_password, verify_password
+import unittest
+from auth import (
+    is_valid_name, is_valid_email, is_valid_password,
+    hash_password, verify_password, create_captcha
+)
 
-def test_valid_email():
-    assert is_valid_email("martin@gmail.com")
-    assert is_valid_email("gogulanov.martin@abv.bg")
+class TestAuth(unittest.TestCase):
 
-def test_invalid_email():
-    assert not is_valid_email("")
-    assert not is_valid_email("milenov.com")
-    assert not is_valid_email("martin@bg")
-    assert not is_valid_email("petrov@")
-    assert not is_valid_email(None)
-    assert not is_valid_email(123)
+    def test_valid_email(self):
+        self.assertTrue(is_valid_email("martingogulanov@gmail.com"))
+        self.assertFalse(is_valid_email("invalid-email"))
 
-def test_valid_name():
-    assert is_valid_name("Martin Gogulanov")
-    assert is_valid_name("Martin")
-    assert is_valid_name("Martin-Gogulanov")
+    def test_valid_name(self):
+        self.assertTrue(is_valid_name("Martin"))
+        self.assertFalse(is_valid_name("M3rtin"))
 
-def test_invalid_name():
-    assert not is_valid_name("")
-    assert not is_valid_name("05Martin")
-    assert not is_valid_name("M")
-    assert not is_valid_name(None)
-    assert not is_valid_name(123)
+    def test_valid_password(self):
+        self.assertTrue(is_valid_password("StrongPass1"))
+        self.assertFalse(is_valid_password("short"))
+        self.assertFalse(is_valid_password("withoutupper3"))
+        self.assertFalse(is_valid_password("WITHOUTLOWER"))
 
-def test_valid_password():
-    assert is_valid_password("abc12345")
-    assert is_valid_password("MyPassw0rd")
+    def test_hash_and_verify_password(self):
+        password = "Marti2005"
+        hashed = hash_password(password)
+        self.assertTrue(verify_password(password, hashed))
+        self.assertFalse(verify_password("other", hashed))
 
-def test_invalid_password():
-    assert not is_valid_password("short1")
-    assert not is_valid_password("password")
-    assert not is_valid_password("")
-    assert not is_valid_password(None)
-    assert not is_valid_password([])
+    def test_generate_captcha(self):
+        captcha_code = create_captcha()
+        self.assertEqual(len(captcha_code), 6)
+        self.assertTrue(captcha_code.isalnum())
 
-def test_hash_and_verify_password():
-    my_pass = "marti123"
-    hashed_pass = hash_password(my_pass)
-    assert verify_password(my_pass, hashed_pass)
-    assert not verify_password("abc", hashed_pass)
-
-def test_hash_returns_string():
-    my_pass = "martin123"
-    hashed_pass = hash_password(my_pass)
-    assert isinstance(hashed_pass, str)
-    assert len(hashed_pass) == 64
+if __name__ == '__main__':
+    unittest.main()

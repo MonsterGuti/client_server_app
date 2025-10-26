@@ -12,6 +12,9 @@ REGISTER_FORM = """
             First Name: <input type="text" name="first_name"><br>
             Last Name: <input type="text" name="last_name"><br>
             Password: <input type="password" name="password"><br>
+            <p> Captcha: <b> {captcha} </b> </p>
+            Enter the code: <input type="text" name="captcha_input"><br>
+            <input type="hidden" name="captcha_value" value="{captcha}">
             <input type="submit" value="Register">
             </form>
         </body> 
@@ -49,10 +52,13 @@ ACC_FORM = """
 class RegistrationHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/register":
+            from auth import create_captcha
+            captcha = create_captcha()
+            html_with_captcha = REGISTER_FORM.format(captcha = captcha)
             self.send_response(200)
             self.send_header("Content-Type", "text/html")
             self.end_headers()
-            self.wfile.write(REGISTER_FORM.encode())
+            self.wfile.write(html_with_captcha.encode())
 
         elif self.path == "/login":
             self.send_response(200)
@@ -87,6 +93,11 @@ class RegistrationHandler(BaseHTTPRequestHandler):
             first_name = data.get("first_name", [""])[0]
             last_name = data.get("last_name", [""])[0]
             password = data.get("password", [""])[0]
+            captcha_value = data.get("captcha_value", [""])[0]
+            captcha_input = data.get("captcha_input", [""])[0]
+            if captcha_value.upper() != captcha_input.upper():
+                respond(f"Invalid captcha: {captcha_input}")
+                return
 
             if not is_valid_email(email):
                 respond("Invalid email!")
