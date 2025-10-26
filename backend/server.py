@@ -4,9 +4,12 @@ from urllib.parse import parse_qs
 from .db import create_user, get_user_by_email, update_user
 from .auth import verify_password, hash_password, is_valid_password, is_valid_email, is_valid_name
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+TEMPLATE_DIR = os.path.join(BASE_DIR, "..", "frontend", "templates")
+
 def load_html(template_name):
-    path = os.path.join("..", "frontend", "templates", template_name)
-    with open(path, "r") as f:
+    path = os.path.join(TEMPLATE_DIR, template_name)
+    with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
 
@@ -126,4 +129,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
