@@ -54,11 +54,10 @@ class RegistrationHandler(BaseHTTPRequestHandler):
             self.send_html(f"<h3>{message}</h3>")
 
         content_length = int(self.headers["Content-Length"])
+        post_data = self.rfile.read(content_length).decode()
+        data = parse_qs(post_data)
 
         if self.path == "/register":
-            post_data = self.rfile.read(content_length).decode()
-            data = parse_qs(post_data)
-
             email = data.get("email", [""])[0]
             first_name = data.get("first_name", [""])[0]
             last_name = data.get("last_name", [""])[0]
@@ -87,9 +86,6 @@ class RegistrationHandler(BaseHTTPRequestHandler):
             respond("User created successfully!")
 
         elif self.path == "/login":
-            post_data = self.rfile.read(content_length).decode()
-            data = parse_qs(post_data)
-
             email = data.get("email", [""])[0]
             password = data.get("password", [""])[0]
             current_user = get_user_by_email(email)
@@ -103,9 +99,6 @@ class RegistrationHandler(BaseHTTPRequestHandler):
                 respond("Invalid password!")
 
         elif self.path == "/profile":
-            post_data = self.rfile.read(content_length).decode()
-            data = parse_qs(post_data)
-
             email = data.get("email", [""])[0]
             password = data.get("password", [""])[0]
             first_name = data.get("first_name", [""])[0]
